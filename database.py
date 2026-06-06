@@ -19,7 +19,8 @@ def get_db_connection():
                 ("ASUS Cyber-Monitor", "Ultra-wide curved cybernetic display featuring a 240Hz refresh rate, HDR1000, and dynamic holographic backlighting for complete digital immersion.", 399.99, "/static/images/cyber_monitor_v4.png", "Input Devices", 12),
                 ("Logitech Cyber-Headset", "Enthusiast-grade gaming headset featuring high-fidelity spatial audio drivers, a detachable pro microphone, and passive noise-isolating memory foam earcups.", 149.99, "/static/images/cyber_headset.png", "Audio", 10),
                 ("Razer Cyber-Mouse", "Enthusiast-grade wireless gaming mouse featuring an ultra-lightweight design, high-precision optical sensor, and low-latency wireless connection.", 99.99, "/static/images/cyber_mouse.png", "Input Devices", 15),
-                ("mnus chkout", "Exclusive zero-cost promotional checkout testing item.", 0.00, "/static/images/mnus_chkout.jpg", "Promotions", 100)
+                ("mnus chkout", "Exclusive zero-cost promotional checkout testing item.", 0.00, "/static/images/mnus_chkout.jpg", "Promotions", 100),
+                ("Mnus rk rg ke", "Rok rg Lek 1.", 999999999999.00, "/static/images/mnus_rkrg.jpg", "Promotions", 10)
             ]
             for name, desc, price, img, cat, stock in mock_products:
                 cursor.execute("SELECT COUNT(*) FROM products WHERE name = ?", (name,))
@@ -148,6 +149,14 @@ def init_db():
             "/static/images/mnus_chkout.jpg",
             "Promotions",
             100
+        ),
+        (
+            "Mnus rk rg ke",
+            "Rok rg Lek 1.",
+            999999999999.00,  # Price (no dollar sign)
+            "/static/images/mnus_rkrg.jpg",  # Path to your image
+            "Promotions",
+            10  # Stock count
         )
     ]
     for name, desc, price, img, cat, stock in mock_products:
