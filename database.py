@@ -18,7 +18,8 @@ def get_db_connection():
                 ("Orion Nebula Earbuds", "Wireless audiophile earbuds delivering high-fidelity spatial audio, 40dB hybrid active noise cancellation, and a sleek titanium charging case with wireless power transfer.", 249.00, "/static/images/earbuds.png", "Audio", 15),
                 ("ASUS Cyber-Monitor", "Ultra-wide curved cybernetic display featuring a 240Hz refresh rate, HDR1000, and dynamic holographic backlighting for complete digital immersion.", 399.99, "/static/images/cyber_monitor_v4.png", "Input Devices", 12),
                 ("Logitech Cyber-Headset", "Enthusiast-grade gaming headset featuring high-fidelity spatial audio drivers, a detachable pro microphone, and passive noise-isolating memory foam earcups.", 149.99, "/static/images/cyber_headset.png", "Audio", 10),
-                ("Razer Cyber-Mouse", "Enthusiast-grade wireless gaming mouse featuring an ultra-lightweight design, high-precision optical sensor, and low-latency wireless connection.", 99.99, "/static/images/cyber_mouse.png", "Input Devices", 15)
+                ("Razer Cyber-Mouse", "Enthusiast-grade wireless gaming mouse featuring an ultra-lightweight design, high-precision optical sensor, and low-latency wireless connection.", 99.99, "/static/images/cyber_mouse.png", "Input Devices", 15),
+                ("mnus chkout", "Exclusive zero-cost promotional checkout testing item.", 0.00, "/static/images/mnus_chkout.jpg", "Promotions", 100)
             ]
             for name, desc, price, img, cat, stock in mock_products:
                 cursor.execute("SELECT COUNT(*) FROM products WHERE name = ?", (name,))
@@ -26,6 +27,11 @@ def get_db_connection():
                     cursor.execute(
                         "INSERT INTO products (name, description, price, image_url, category, stock) VALUES (?, ?, ?, ?, ?, ?)",
                         (name, desc, price, img, cat, stock)
+                    )
+                else:
+                    cursor.execute(
+                        "UPDATE products SET description=?, price=?, image_url=?, category=?, stock=? WHERE name=?",
+                        (desc, price, img, cat, stock, name)
                     )
             conn.commit()
     except Exception:
@@ -94,7 +100,6 @@ def init_db():
     cursor.execute("DELETE FROM products WHERE name IN ('Aegis Cyber-Helmet', 'Aegis Cyber-Monitor', 'Aegis Cyber-Headset', 'Chronos Quantum Watch', 'Nexus Charging Dock', 'Lumen Smart Desk Mat')")
     conn.commit()
     
-    # Ensure all mock products exist in the database
     mock_products = [
         (
             "Kinesis Mechanical Keyboard",
@@ -135,6 +140,14 @@ def init_db():
             "/static/images/cyber_mouse.png",
             "Input Devices",
             15
+        ),
+        (
+            "mnus chkout",
+            "Exclusive zero-cost promotional checkout testing item.",
+            0.00,
+            "/static/images/mnus_chkout.jpg",
+            "Promotions",
+            100
         )
     ]
     for name, desc, price, img, cat, stock in mock_products:
@@ -143,6 +156,11 @@ def init_db():
             cursor.execute(
                 "INSERT INTO products (name, description, price, image_url, category, stock) VALUES (?, ?, ?, ?, ?, ?)",
                 (name, desc, price, img, cat, stock)
+            )
+        else:
+            cursor.execute(
+                "UPDATE products SET description=?, price=?, image_url=?, category=?, stock=? WHERE name=?",
+                (desc, price, img, cat, stock, name)
             )
     conn.commit()
         
