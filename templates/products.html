@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}YSTAA Shop | Cybernetic Catalog{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    <!-- Search and Catalog Filter Header -->
+    <div class="section-header" style="flex-direction: column; align-items: stretch; gap: 24px; margin-bottom: 40px;">
+        <div class="section-title">
+            <h2>Hardware Catalog</h2>
+            <p>Select specialized equipment calibrated for your operations</p>
+        </div>
+        
+        <!-- Search Form -->
+        <form action="{{ url_for('products') }}" method="GET" style="display: flex; gap: 16px; width: 100%; max-width: 600px;">
+            {% if selected_category %}
+                <input type="hidden" name="category" value="{{ selected_category }}">
+            {% endif %}
+            <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                <input type="text" name="search" class="form-input" placeholder="Search files, hardware, specifications..." value="{{ search_query or '' }}">
+            </div>
+            <button type="submit" class="btn btn-primary" style="border-radius: 10px; padding: 12px 24px;">Search</button>
+            {% if search_query or selected_category %}
+                <a href="{{ url_for('products') }}" class="btn btn-secondary" style="border-radius: 10px; padding: 12px 20px; display: inline-flex; align-items: center;">Clear</a>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Category selector tabs -->
+    <div class="categories-container" style="margin-bottom: 40px;">
+        <a href="{{ url_for('products', search=search_query) }}" class="category-tab {% if not selected_category %}active{% endif %}">
+            All Collections
+        </a>
+        {% for cat in categories %}
+            <a href="{{ url_for('products', category=cat, search=search_query) }}" class="category-tab {% if selected_category == cat %}active{% endif %}">
+                {{ cat }}
+            </a>
+        {% endfor %}
+    </div>
+
+    <!-- Products Grid -->
+    {% if products %}
+        <div class="products-grid">
+            {% for prod in products %}
+                <div class="product-card glass-panel">
+                    <div class="product-image-area">
+                        <span class="product-category">{{ prod.category }}</span>
+                        <img src="{{ prod.image_url }}" alt="{{ prod.name }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="product-image-fallback" style="display:none;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">
+                            <a href="{{ url_for('product_detail', product_id=prod.id) }}">{{ prod.name }}</a>
+                        </h3>
+                        <p class="product-desc">{{ prod.description }}</p>
+                        <div class="product-footer">
+                            <span class="product-price">${{ "%.2f" | format(prod.price) }}</span>
+                            <button class="btn btn-primary btn-add-cart" onclick="addToCart({{ prod.id }})">
+                                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                </svg>
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="glass-panel" style="padding: 60px; text-align: center;">
+            <svg style="width: 48px; height: 48px; stroke: var(--text-secondary); margin-bottom: 16px;" fill="none" viewBox="0 0 24 24" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.637 10.637z" />
+            </svg>
+            <h3>No Products Found</h3>
+            <p style="color: var(--text-secondary); margin-top: 8px;">Try clearing your filters or refining your search parameters.</p>
+            <a href="{{ url_for('products') }}" class="btn btn-primary" style="margin-top: 20px;">Clear All Filters</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

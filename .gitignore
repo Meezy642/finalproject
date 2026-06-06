@@ -1,0 +1,27 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Private environment configuration
+.env
+
+# Local Databases
+*.db
+*.sqlite3
+
+# Log files
+*.log
+test_err.txt
+test_results.txt
+test_results_utf8.txt
+
+# IDE settings
+.idea/
+.vscode/

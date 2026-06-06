@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}YSTAA Shop | Terminal Checkout{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    <div class="section-header">
+        <div class="section-title">
+            <h2>Terminal Checkout</h2>
+            <p>Finalize shipping coordinates and execute order dispatch</p>
+        </div>
+    </div>
+    
+    <div class="checkout-layout" style="margin-top: 32px;">
+        <!-- Left Column: Shipping Form -->
+        <div class="glass-panel" style="padding: 40px; align-self: flex-start;">
+            <h3 style="font-size: 20px; margin-bottom: 24px; font-weight: 600;">Shipping Coordinates</h3>
+            
+            <form action="{{ url_for('checkout') }}" method="POST" id="checkout-form">
+                <div class="form-group">
+                    <label for="customer_name" class="form-label">Full Name</label>
+                    <input type="text" id="customer_name" name="customer_name" class="form-input" required placeholder="e.g., neo"
+                           value="{% if session.get('user') %}{{ session['user']['username'] }}{% endif %}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-input" required placeholder="e.g., neo@matrix.io"
+                           value="{% if session.get('user') %}{{ session['user']['email'] }}{% endif %}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone" class="form-label">Phone Link</label>
+                    <input type="tel" id="phone" name="phone" class="form-input" required placeholder="e.g., +1 555-0199">
+                </div>
+                
+                <div class="form-group">
+                    <label for="address" class="form-label">Shipping Address</label>
+                    <textarea id="address" name="address" class="form-input" required rows="4" placeholder="Enter full street, state, ZIP, country..." style="resize: vertical; font-family: inherit;"></textarea>
+                </div>
+                
+                <!-- Promo Code (Optional) -->
+                <div class="glass-panel" style="padding: 20px; margin-top: 32px; background: rgba(0,0,0,0.1); border-color: rgba(99,102,241,0.1);">
+                    <h4 style="font-size: 13px; text-transform: uppercase; color: var(--accent-cyan); margin-bottom: 12px; font-weight: 700;">
+                        Promo Code (Optional)
+                    </h4>
+                    <p style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.4;">
+                        Have a promotional discount voucher code? Enter it below to apply to this order.
+                    </p>
+                    <div style="display: flex; gap: 8px; align-items: stretch;">
+                        <input type="text" id="promo_code_input" class="form-input" style="font-size: 12px; padding: 8px 12px; flex: 1;" placeholder="e.g., YSTAA20">
+                        <button type="button" class="btn btn-secondary" onclick="applyPromoCode()" style="font-size: 11px; padding: 8px 16px; border-radius: 8px; white-space: nowrap;">
+                            Apply
+                        </button>
+                    </div>
+                    <span id="promo-status" style="display: block; font-size: 11px; margin-top: 8px; font-weight: 600;"></span>
+                </div>
+                
+                <input type="hidden" name="applied_promo" id="applied_promo" value="">
+                
+                <button type="submit" class="btn btn-primary" id="checkout-submit-btn" style="width: 100%; border-radius: 10px; margin-top: 24px; padding: 12px;">
+                    Execute Order Dispatch
+                </button>
+            </form>
+        </div>
+        
+        <!-- Right Column: Cart Summary -->
+        <div class="checkout-summary-card glass-panel">
+            <h3 style="font-size: 20px; margin-bottom: 24px; font-weight: 600; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+                Order Summary
+            </h3>
+            
+            <!-- Items list injected dynamically by cart.js -->
+            <div id="checkout-items-summary" style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 24px;">
+                <p style="color: var(--text-secondary); text-align: center; padding: 20px 0;">Reading cart contents...</p>
+            </div>
+            
+            <div style="border-top: 1px solid var(--border-color); padding-top: 20px; display: flex; flex-direction: column; gap: 12px;">
+                <div class="cart-summary-row" style="font-size: 14px; color: var(--text-secondary);">
+                    <span>Acquisition Subtotal</span>
+                    <span id="checkout-subtotal">$0.00</span>
+                </div>
+                <div class="cart-summary-row" style="font-size: 14px; color: var(--text-secondary);">
+                    <span>Hyper-Delivery</span>
+                    <span style="color: var(--accent-teal); font-weight: 600;">FREE</span>
+                </div>
+                <div class="cart-summary-row" style="font-size: 20px; font-weight: 800; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px;">
+                    <span>Total Invoiced</span>
+                    <span id="checkout-total" style="color: var(--text-primary);">$0.00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Global active discount info
+    window.activeDiscountPercent = 0.0;
+    
+    function applyPromoCode() {
+        const input = document.getElementById('promo_code_input');
+        const statusSpan = document.getElementById('promo-status');
+        const hiddenInput = document.getElementById('applied_promo');
+        const code = input.value.trim().toUpperCase();
+        
+        if (!code) {
+            statusSpan.style.color = 'var(--text-secondary)';
+            statusSpan.textContent = '';
+            window.activeDiscountPercent = 0.0;
+            hiddenInput.value = '';
+            updateCartUI(); // Trigger UI recalculation
+            return;
+        }
+        
+        // Define active promo codes and discounts
+        let discount = 0.0;
+        if (code === 'YSTAA10' || code === 'SAVE10') {
+            discount = 0.10;
+        } else if (code === 'YSTAA20' || code === 'SAVE20') {
+            discount = 0.20;
+        } else if (code === 'YSTAA50') {
+            discount = 0.50;
+        }
+        
+        if (discount > 0) {
+            window.activeDiscountPercent = discount;
+            hiddenInput.value = code;
+            statusSpan.style.color = 'var(--accent-teal)';
+            statusSpan.textContent = `Voucher applied: ${(discount * 100)}% discount!`;
+            showToast(`Promo code ${code} applied successfully!`, 'success');
+        } else {
+            window.activeDiscountPercent = 0.0;
+            hiddenInput.value = '';
+            statusSpan.style.color = 'var(--accent-rose)';
+            statusSpan.textContent = 'Invalid promo code.';
+            showToast('Invalid promo code entered.', 'error');
+        }
+        
+        // Trigger cart UI update to recalculate summary totals
+        updateCartUI();
+    }
+
+    // Prevent submitting checkouts when the cookie cart is empty
+    document.getElementById('checkout-form').addEventListener('submit', function(e) {
+        const cart = getCart();
+        if (cart.length === 0) {
+            e.preventDefault();
+            showToast("Your cart is empty! Add products before checking out.", "error");
+        }
+    });
+</script>
+{% endblock %}

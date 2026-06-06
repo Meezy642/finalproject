@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}YSTAA Shop | Contact Hub{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    <div class="section-header">
+        <div class="section-title">
+            <h2>Contact Engineering Node</h2>
+            <p>Establish a line of communication with our hardware developers</p>
+        </div>
+    </div>
+    
+    <div class="contact-layout" style="margin-top: 32px;">
+        <!-- Contact Information Info Cards -->
+        <div class="contact-info-panel">
+            <div class="contact-card glass-panel">
+                <div class="contact-card-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                    </svg>
+                </div>
+                <div class="contact-card-content">
+                    <h3>Direct Email Link</h3>
+                    <p>support@ystaashop.com</p>
+                    <p>sales@ystaashop.com</p>
+                </div>
+            </div>
+            
+            <div class="contact-card glass-panel">
+                <div class="contact-card-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25s-7.5-4.108-7.5-11.25a7.5 7.5 0 1115 0z" />
+                    </svg>
+                </div>
+                <div class="contact-card-content">
+                    <h3>Geographic Operations</h3>
+                    <p>Sector 7, Tech District</p>
+                    <p>Neo-Tokyo, Earth-9</p>
+                </div>
+            </div>
+            
+            <div class="contact-card glass-panel">
+                <div class="contact-card-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375 0 11-.75 0 .375 0 01.75 0zm7.5 0a.375 0 11-.75 0 .375 0 01.75 0zM12 18.75c-3.008 0-5.885-.866-8.31-2.369a1.75 1.75 0 01-.783-1.464V6.25a1.75 1.75 0 011.75-1.75h14.5A1.75 1.75 0 0121 6.25v8.667a1.75 1.75 0 01-.783 1.464 17.5 17.5 0 01-8.217 2.369z" />
+                    </svg>
+                </div>
+                <div class="contact-card-content">
+                    <h3>Cyber-Channel Support</h3>
+                    <p>Matrix Chat: #ystaashop-dev</p>
+                    <p>Secure Comm Terminals: 24/7/365</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contact Submission Form Panel -->
+        <div class="glass-panel" style="padding: 40px;">
+            <h3 style="font-size: 22px; margin-bottom: 24px;">Transmit Message</h3>
+            
+            <form action="{{ url_for('contact') }}" method="POST">
+                <div class="form-group">
+                    <label for="name" class="form-label">Full Name</label>
+                    <input type="text" id="name" name="name" class="form-input" required placeholder="e.g., Arthur Dent" 
+                           value="{% if session.get('user') %}{{ session['user']['username'] }}{% endif %}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email" class="form-label">Return Email Address</label>
+                    <input type="email" id="email" name="email" class="form-input" required placeholder="e.g., arthur@milkyway.org"
+                           value="{% if session.get('user') %}{{ session['user']['email'] }}{% endif %}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="message" class="form-label">Message Payload</label>
+                    <textarea id="message" name="message" class="form-input" required rows="6" placeholder="Describe specifications, inquiry, or logistics issues..." style="resize: vertical; font-family: inherit;"></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; border-radius: 10px; padding: 12px; margin-top: 16px;">
+                    Transmit Message Package
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
